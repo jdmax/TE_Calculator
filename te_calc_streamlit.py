@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import io
-import matplotlib.pyplot as plt
-import seaborn as sns
 from scipy import stats
 
 # Set page config
@@ -277,35 +275,167 @@ if not st.session_state.te_data.empty and len(st.session_state.te_data) > 0:
     # Visualizations
     st.header("📊 Visualizations")
 
-    # Set seaborn style
-    sns.set_style("whitegrid")
-    sns.set_palette("husl")
+    # Create charts with Streamlit's native functions
+    col1, col2 = st.columns(2)
 
-    # Create plots
-    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 10))
+    with col1:
+        # Temperature histogram using bar chart
+        st.subheader("Temperature Distribution")
+        temp_counts, temp_bins = np.histogram(df['Temperature (K)'], bins=10)
+        temp_chart_data = pd.DataFrame({
+            'Temperature Range': [f"{temp_bins[i]:.4f}-{temp_bins[i + 1]:.4f}" for i in range(len(temp_counts))],
+            'Count': temp_counts
+        })
+        st.bar_chart(temp_chart_data.set_index('Temperature Range'))
 
-    # Temperature distribution
-    sns.histplot(data=df, x='Temperature (K)', bins=10, alpha=0.7,
-                 color='skyblue', edgecolor='black', ax=ax1)
-    ax1.set_title('Temperature Distribution', fontsize=12, fontweight='bold')
+        # Area vs Calibration Constant scatter
+        st.subheader("Area vs Calibration Constant")
+        scatter_data = df[['Area', 'Calibration Constant']].copy()
+        st.scatter_chart(scatter_data.set_index('Area'))
 
-    # TE Polarization vs Temperature
-    sns.scatterplot(data=df, x='Temperature (K)', y='TE Polarization',
-                    alpha=0.8, s=60, color='orange', ax=ax2)
-    ax2.set_title('TE Polarization vs Temperature', fontsize=12, fontweight='bold')
+    with col2:
+        # TE Polarization vs Temperature scatter
+        st.subheader("TE Polarization vs Temperature")
+        te_scatter_data = df[['Temperature (K)', 'TE Polarization']].copy()
+        st.scatter_chart(te_scatter_data.set_index('Temperature (K)'))
 
-    # Area vs Calibration Constant
-    sns.scatterplot(data=df, x='Area', y='Calibration Constant',
-                    alpha=0.8, s=60, color='green', ax=ax3)
-    ax3.set_title('Area vs Calibration Constant', fontsize=12, fontweight='bold')
+        # Calibration Constant histogram
+        st.subheader("Calibration Constant Distribution")
+        cal_counts, cal_bins = np.histogram(df['Calibration Constant'], bins=10)
+        cal_chart_data = pd.DataFrame({
+            'Calibration Range': [f"{cal_bins[i]:.2f}-{cal_bins[i + 1]:.2f}" for i in range(len(cal_counts))],
+            'Count': cal_counts
+        })
+        st.bar_chart(cal_chart_data.set_index('Calibration Range'))
 
-    # Calibration Constant distribution
-    sns.histplot(data=df, x='Calibration Constant', bins=10, alpha=0.7,
-                 color='purple', edgecolor='black', ax=ax4)
-    ax4.set_title('Calibration Constant Distribution', fontsize=12, fontweight='bold')
+    # Additional visualizations
+    st.subheader("🎨 Advanced Visualizations")
 
-    plt.tight_layout()
-    st.pyplot(fig)
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Correlation matrix as a dataframe
+        st.subheader("Correlation Matrix")
+        correlation_matrix = df[['Temperature (K)', 'Area', 'TE Polarization', 'Calibration Constant']].corr()
+
+
+        # Display correlation matrix with color formatting
+        def color_correlation(val):
+            """Color code correlation values"""
+            if abs(val) > 0.7:
+                return 'background-color: lightcoral' if val < 0 else 'background-color: lightgreen'
+            elif abs(val) > 0.4:
+                return 'background-color: lightyellow'
+            else:
+                return 'background-color: lightblue'
+
+
+        styled_corr = correlation_matrix.style.applymap(color_correlation).format("{:.3f}")
+        st.dataframe(styled_corr, use_container_width=True)
+
+        st.caption(
+            "🔴 Strong negative correlation | 🟢 Strong positive correlation | 🟡 Moderate correlation | 🔵 Weak correlation")
+
+    with col2:
+        # Line chart showing all parameters over measurement index
+        st.subheader("Parameter Trends")
+
+        # Normalize data for comparison
+        df_normalized = df.copy()
+        for col in ['Temperature (K)', 'Area', 'TE Polarization', 'Calibration Constant']:
+            mean_val = df_normalized[col].mean()
+            std_val = df_normalized[col].std()
+            if std_val != 0:
+                df_normalized[f'{col} (normalized)'] = (df_normalized[col] - mean_val) / std_val
+            else:
+                df_normalized[f'{col} (normalized)'] = 0
+
+        # Create line chart with normalized data
+        norm_cols = [col for col in df_normalized.columns if '(normalized)' in col]
+        trend_data = df_normalized[norm_cols].copy()
+        trend_data.index = range(1, len(trend_data) + 1)  # Measurement number
+
+        st.line_chart(trend_data)
+        st.caption("All parameters normalized (z-score) for comparison")
+
+    # Summary statistics table
+    st.subheader("📈 Data Summary")
+
+    # Create a comprehensive summary
+    summary_stats = pd.DataFrame({
+        'Parameter': ['Temperature (K)', 'Area', 'TE Polarization', 'Calibration Constant'],
+        'Mean': [
+            df['Temperature (K)'].mean(),
+            df['Area'].mean(),
+            df['TE Polarization'].mean(),
+            df['Calibration Constant'].mean()
+        ],
+        'Std Dev': [
+            df['Temperature (K)'].std(),
+            df['Area'].std(),
+            df['TE Polarization'].std(),
+            df['Calibration Constant'].std()
+        ],
+        'Min': [
+            df['Temperature (K)'].min(),
+            df['Area'].min(),
+            df['TE Polarization'].min(),
+            df['Calibration Constant'].min()
+        ],
+        'Max': [
+            df['Temperature (K)'].max(),
+            df['Area'].max(),
+            df['TE Polarization'].max(),
+            df['Calibration Constant'].max()
+        ],
+        'Range': [
+            df['Temperature (K)'].max() - df['Temperature (K)'].min(),
+            df['Area'].max() - df['Area'].min(),
+            df['TE Polarization'].max() - df['TE Polarization'].min(),
+            df['Calibration Constant'].max() - df['Calibration Constant'].min()
+        ]
+    })
+
+    # Format the summary table
+    formatted_summary = summary_stats.style.format({
+        'Mean': '{:.6f}',
+        'Std Dev': '{:.6f}',
+        'Min': '{:.6f}',
+        'Max': '{:.6f}',
+        'Range': '{:.6f}'
+    })
+
+    st.dataframe(formatted_summary, use_container_width=True)
+
+    # Individual parameter charts
+    if len(df) > 3:
+        st.subheader("📊 Individual Parameter Analysis")
+
+        # Allow user to select which parameter to analyze
+        param_to_analyze = st.selectbox(
+            "Select parameter for detailed analysis:",
+            ['Temperature (K)', 'Area', 'TE Polarization', 'Calibration Constant']
+        )
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            # Show parameter over measurement index
+            param_data = pd.DataFrame({
+                'Measurement': range(1, len(df) + 1),
+                param_to_analyze: df[param_to_analyze]
+            })
+            st.line_chart(param_data.set_index('Measurement'))
+            st.caption(f"{param_to_analyze} vs Measurement Number")
+
+        with col2:
+            # Show simple statistics
+            param_values = df[param_to_analyze]
+            st.metric("Mean", f"{param_values.mean():.6f}")
+            st.metric("Standard Deviation", f"{param_values.std():.6f}")
+            st.metric("Coefficient of Variation", f"{(param_values.std() / param_values.mean() * 100):.2f}%")
+            if len(param_values) > 1:
+                st.metric("Range", f"{param_values.max() - param_values.min():.6f}")
 
     # Export functionality
     st.header("💾 Export Data")
@@ -366,4 +496,4 @@ st.sidebar.markdown("**Calibration Constant:**")
 st.sidebar.latex(r"C = \frac{\text{Area}}{P}")
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("*TE Calculator, J. Maxwell, 2025*")
+st.sidebar.markdown("*TE Calculator v1.0*")
