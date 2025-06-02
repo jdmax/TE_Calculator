@@ -21,7 +21,7 @@ def calculate_te_polarization(temperature, field, species_magneton, spin):
 
     if spin == 0.5:
         # Spin-1/2 particles (proton, tritium, 13C)
-        return np.tanh(x / 2)
+        return np.tanh(x)
     elif spin == 1.0:
         # Spin-1 particles (deuteron)
         # P = 4*tanh(x) / (3 + tanh(x)^2) where x = μB/(kT)
@@ -471,12 +471,12 @@ st.sidebar.markdown(f"**Boltzmann Constant:** {BOLTZMANN_CONSTANT:.2e} J/K")
 
 st.sidebar.markdown("### 📐 Formulas")
 st.sidebar.markdown("**TE Polarization (Spin-1/2):**")
-st.sidebar.latex(r"P = \tanh\left(\frac{\mu B}{2 k T}\right)")
+st.sidebar.latex(r"P = \tanh\left(\frac{\mu B}{k T}\right)")
 st.sidebar.markdown("**TE Polarization (Spin-1):**")
 st.sidebar.latex(r"P = \frac{4\tanh(x)}{3 + \tanh^2(x)}")
 st.sidebar.markdown("where x = μB/kT")
 st.sidebar.markdown("**Calibration Constant:**")
-st.sidebar.latex(r"C = \frac{\text{Area}}{P}")
+st.sidebar.latex(r"C_c = \frac{\text{Area}}{P}")
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("*TE Calculator, J. Maxwell 2025*")
