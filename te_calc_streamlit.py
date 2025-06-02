@@ -277,36 +277,32 @@ if not st.session_state.te_data.empty and len(st.session_state.te_data) > 0:
     # Visualizations
     st.header("📊 Visualizations")
 
+    # Set seaborn style
+    sns.set_style("whitegrid")
+    sns.set_palette("husl")
+
     # Create plots
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 10))
 
     # Temperature distribution
-    ax1.hist(df['Temperature (K)'], bins=10, alpha=0.7, color='skyblue', edgecolor='black')
-    ax1.set_xlabel('Temperature (K)')
-    ax1.set_ylabel('Frequency')
-    ax1.set_title('Temperature Distribution')
-    ax1.grid(True, alpha=0.3)
+    sns.histplot(data=df, x='Temperature (K)', bins=10, alpha=0.7,
+                 color='skyblue', edgecolor='black', ax=ax1)
+    ax1.set_title('Temperature Distribution', fontsize=12, fontweight='bold')
 
     # TE Polarization vs Temperature
-    ax2.scatter(df['Temperature (K)'], df['TE Polarization'], alpha=0.7, color='orange')
-    ax2.set_xlabel('Temperature (K)')
-    ax2.set_ylabel('TE Polarization')
-    ax2.set_title('TE Polarization vs Temperature')
-    ax2.grid(True, alpha=0.3)
+    sns.scatterplot(data=df, x='Temperature (K)', y='TE Polarization',
+                    alpha=0.8, s=60, color='orange', ax=ax2)
+    ax2.set_title('TE Polarization vs Temperature', fontsize=12, fontweight='bold')
 
     # Area vs Calibration Constant
-    ax3.scatter(df['Area'], df['Calibration Constant'], alpha=0.7, color='green')
-    ax3.set_xlabel('Area')
-    ax3.set_ylabel('Calibration Constant')
-    ax3.set_title('Area vs Calibration Constant')
-    ax3.grid(True, alpha=0.3)
+    sns.scatterplot(data=df, x='Area', y='Calibration Constant',
+                    alpha=0.8, s=60, color='green', ax=ax3)
+    ax3.set_title('Area vs Calibration Constant', fontsize=12, fontweight='bold')
 
     # Calibration Constant distribution
-    ax4.hist(df['Calibration Constant'], bins=10, alpha=0.7, color='purple', edgecolor='black')
-    ax4.set_xlabel('Calibration Constant')
-    ax4.set_ylabel('Frequency')
-    ax4.set_title('Calibration Constant Distribution')
-    ax4.grid(True, alpha=0.3)
+    sns.histplot(data=df, x='Calibration Constant', bins=10, alpha=0.7,
+                 color='purple', edgecolor='black', ax=ax4)
+    ax4.set_title('Calibration Constant Distribution', fontsize=12, fontweight='bold')
 
     plt.tight_layout()
     st.pyplot(fig)
@@ -370,4 +366,4 @@ st.sidebar.markdown("**Calibration Constant:**")
 st.sidebar.latex(r"C = \frac{\text{Area}}{P}")
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("*TE Calculator v1.0, J. Maxwell*")
+st.sidebar.markdown("*TE Calculator, J. Maxwell, 2025*")
