@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import io
-from scipy import stats
 
 # Set page config
 st.set_page_config(
