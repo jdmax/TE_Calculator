@@ -370,4 +370,4 @@ st.sidebar.markdown("**Calibration Constant:**")
 st.sidebar.latex(r"C = \frac{\text{Area}}{P}")
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("*TE Calculator v1.0*")
+st.sidebar.markdown("*TE Calculator v1.0, J. Maxwell*")
