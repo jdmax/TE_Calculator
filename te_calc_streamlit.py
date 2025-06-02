@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import io
 
 # Set page config
 st.set_page_config(
@@ -439,7 +438,7 @@ if not st.session_state.te_data.empty and len(st.session_state.te_data) > 0:
     # Export functionality
     st.header("💾 Export Data")
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
 
     with col1:
         # CSV export
@@ -452,21 +451,6 @@ if not st.session_state.te_data.empty and len(st.session_state.te_data) > 0:
         )
 
     with col2:
-        # Excel export
-        output = io.BytesIO()
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='TE Calculations')
-            stats_df.to_excel(writer, index=False, sheet_name='Statistics')
-        excel_data = output.getvalue()
-
-        st.download_button(
-            label="📊 Download as Excel",
-            data=excel_data,
-            file_name="te_calculations.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-
-    with col3:
         # Text export
         text_output = df.to_string(index=False)
         st.download_button(
@@ -495,4 +479,4 @@ st.sidebar.markdown("**Calibration Constant:**")
 st.sidebar.latex(r"C = \frac{\text{Area}}{P}")
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("*TE Calculator v1.0*")
+st.sidebar.markdown("*TE Calculator, J. Maxwell 2025*")
