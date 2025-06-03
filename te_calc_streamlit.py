@@ -5,7 +5,7 @@ import numpy as np
 # Set page config
 st.set_page_config(
     page_title="TE Calculator",
-    page_icon="🔬",
+    page_icon="🖩",
     layout="wide"
 )
 
@@ -81,7 +81,7 @@ def load_data_from_text(uploaded_file):
 
 
 # Title and description
-st.title("🔬 Thermal Equilibrium (TE) Calculator")
+st.title("🖩 Thermal Equilibrium (TE) Calculator")
 st.markdown("Calculate thermal equilibrium polarization and calibration constants for NMR experiments")
 
 # Sidebar for parameters
