@@ -81,7 +81,7 @@ def load_data_from_text(uploaded_file):
 
 
 # Title and description
-st.title("🧮 Thermal Equilibrium (TE) Calculator")
+st.title("Thermal Equilibrium (TE) Calculator")
 st.markdown("Calculate thermal equilibrium polarization and calibration constants for NMR experiments")
 
 # Sidebar for parameters
@@ -131,7 +131,7 @@ if uploaded_file is not None:
         st.success(f"Successfully loaded {len(uploaded_data)} data points")
 
 # Data input section
-st.header("📊 Data Table")
+st.header("Data Table")
 col1, col2 = st.columns([3, 1])
 
 with col1:
@@ -183,7 +183,7 @@ with col2:
 
 # Calculations section
 if not st.session_state.te_data.empty and len(st.session_state.te_data) > 0:
-    st.header("🧮 Calculations")
+    st.header("Calculations")
 
     # Perform calculations
     df = st.session_state.te_data.copy()
@@ -212,12 +212,12 @@ if not st.session_state.te_data.empty and len(st.session_state.te_data) > 0:
     )
 
     # Statistics
-    st.header("📈 Statistical Analysis")
+    st.header("Statistical Analysis")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("📊 Summary Statistics")
+        st.subheader("📈 Summary Statistics")
 
         stats_data = {
             'Parameter': ['Temperature (K)', 'Area', 'TE Polarization', 'Calibration Constant'],
@@ -271,7 +271,7 @@ if not st.session_state.te_data.empty and len(st.session_state.te_data) > 0:
         st.metric("Number of Points", len(df))
 
     # Visualizations
-    st.header("📊 Visualizations")
+    st.header("Visualizations")
 
     # Create charts with Streamlit's native functions
     col1, col2 = st.columns(2)
