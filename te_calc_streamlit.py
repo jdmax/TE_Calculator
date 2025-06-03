@@ -306,56 +306,6 @@ if not st.session_state.te_data.empty and len(st.session_state.te_data) > 0:
         })
         st.bar_chart(cal_chart_data.set_index('Calibration Range'))
 
-    # Additional visualizations
-    st.subheader("🎨 Advanced Visualizations")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        # Correlation matrix as a dataframe
-        st.subheader("Correlation Matrix")
-        correlation_matrix = df[['Temperature (K)', 'Area', 'TE Polarization', 'Calibration Constant']].corr()
-
-
-        # Display correlation matrix with color formatting
-        def color_correlation(val):
-            """Color code correlation values"""
-            if abs(val) > 0.7:
-                return 'background-color: lightcoral' if val < 0 else 'background-color: lightgreen'
-            elif abs(val) > 0.4:
-                return 'background-color: lightyellow'
-            else:
-                return 'background-color: lightblue'
-
-
-        styled_corr = correlation_matrix.style.applymap(color_correlation).format("{:.3f}")
-        st.dataframe(styled_corr, use_container_width=True)
-
-        st.caption(
-            "🔴 Strong negative correlation | 🟢 Strong positive correlation | 🟡 Moderate correlation | 🔵 Weak correlation")
-
-    with col2:
-        # Line chart showing all parameters over measurement index
-        st.subheader("Parameter Trends")
-
-        # Normalize data for comparison
-        df_normalized = df.copy()
-        for col in ['Temperature (K)', 'Area', 'TE Polarization', 'Calibration Constant']:
-            mean_val = df_normalized[col].mean()
-            std_val = df_normalized[col].std()
-            if std_val != 0:
-                df_normalized[f'{col} (normalized)'] = (df_normalized[col] - mean_val) / std_val
-            else:
-                df_normalized[f'{col} (normalized)'] = 0
-
-        # Create line chart with normalized data
-        norm_cols = [col for col in df_normalized.columns if '(normalized)' in col]
-        trend_data = df_normalized[norm_cols].copy()
-        trend_data.index = range(1, len(trend_data) + 1)  # Measurement number
-
-        st.line_chart(trend_data)
-        st.caption("All parameters normalized (z-score) for comparison")
-
     # Summary statistics table
     st.subheader("📈 Data Summary")
 
